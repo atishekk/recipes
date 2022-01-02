@@ -1,0 +1,14 @@
+version: '3.1'
+
+services:
+  database:
+    build: .
+    restart: always
+    ports:
+      - '27017:27017'
+    volumes:
+      - recipe:/data/db
+
+volumes:
+  recipe:
+    external: false
