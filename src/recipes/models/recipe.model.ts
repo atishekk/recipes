@@ -1,5 +1,6 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
 import { v4 } from 'uuid';
 
@@ -29,6 +30,10 @@ export class Recipe {
   @Field((type) => [String])
   @Prop([String])
   ingredients: string[];
+
+  @Field((type) => [ID])
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Images' })
+  images: string[];
 }
 
 export const RecipeSchema = SchemaFactory.createForClass(Recipe);

@@ -11,7 +11,7 @@ export class RecipesService {
   ) {}
 
   async findOne(id: string): Promise<Recipe> {
-    return this.recipeModel.findById(id);
+    return this.recipeModel.findById(id).lean();
   }
 
   async create(newRecipeData: NewRecipeInput): Promise<Recipe> {
@@ -19,7 +19,11 @@ export class RecipesService {
   }
 
   async remove(id: string): Promise<boolean> {
-    const removed = this.recipeModel.findByIdAndDelete(id);
+    const removed = this.recipeModel.findByIdAndDelete(id).lean();
     return !!removed;
+  }
+
+  async updateOne(id: string, recipe: Recipe): Promise<Recipe> {
+    return this.recipeModel.findByIdAndUpdate(id, recipe, { new: true }).lean();
   }
 }

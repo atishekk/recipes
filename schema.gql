@@ -9,6 +9,7 @@ type Recipe {
   description: String
   creationDate: DateTime!
   ingredients: [String!]!
+  images: [ID!]!
 }
 
 """

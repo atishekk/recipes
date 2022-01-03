@@ -4,19 +4,24 @@ import { RecipesService } from './recipes.service';
 import { NotFoundException } from '@nestjs/common';
 import { NewRecipeInput } from './dto/new-recipe.input';
 import { PubSub } from 'graphql-subscriptions';
+import { CommonService } from '../common/common.service';
 
 const pubSub = new PubSub();
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 @Resolver((of) => Recipe)
 export class RecipesResolver {
-  constructor(private readonly recipesService: RecipesService) {}
+  constructor(
+    private readonly recipesService: RecipesService,
+    private readonly commonService: CommonService,
+  ) {}
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   @Query((returns) => Recipe)
   async recipe(@Args('id') id: string): Promise<Recipe> {
     const recipe = await this.recipesService.findOne(id);
     if (!recipe) throw new NotFoundException(id);
+    recipe['images'] = this.commonService.imageLinksRecipe(recipe['images']);
     return recipe;
   }
 
