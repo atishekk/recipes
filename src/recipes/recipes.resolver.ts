@@ -5,6 +5,7 @@ import { NotFoundException } from '@nestjs/common';
 import { NewRecipeInput } from './dto/new-recipe.input';
 import { PubSub } from 'graphql-subscriptions';
 import { CommonService } from '../common/common.service';
+import { PaginatedRecipe } from './dto/paginated-recipe';
 
 const pubSub = new PubSub();
 
@@ -23,6 +24,12 @@ export class RecipesResolver {
     if (!recipe) throw new NotFoundException(id);
     recipe['images'] = this.commonService.imageLinksRecipe(recipe['images']);
     return recipe;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  @Query((returns) => PaginatedRecipe)
+  async paginateRecipe(@Args('cursor', { nullable: true }) cursor: string) {
+    return this.recipesService.paginateRecipe(cursor, 10);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

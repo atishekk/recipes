@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Recipe, RecipeDocument } from './models/recipe.model';
 import { Model } from 'mongoose';
 import { NewRecipeInput } from './dto/new-recipe.input';
+import { PaginatedRecipe } from './dto/paginated-recipe';
 
 @Injectable()
 export class RecipesService {
@@ -25,5 +26,30 @@ export class RecipesService {
 
   async updateOne(id: string, recipe: Recipe): Promise<Recipe> {
     return this.recipeModel.findByIdAndUpdate(id, recipe, { new: true }).lean();
+  }
+
+  async paginateRecipe(
+    cursor: string,
+    limit: number,
+  ): Promise<PaginatedRecipe> {
+    let hasNextPage = false;
+
+    const cursorQuery = cursor ? { _id: { $lt: cursor } } : {};
+
+    let recipes = await this.recipeModel
+      .find(cursorQuery)
+      .sort({ _id: -1 })
+      .limit(limit + 1);
+
+    if (recipes.length > limit) {
+      hasNextPage = true;
+      recipes = recipes.slice(0, -1);
+    }
+    const newCursor = recipes[recipes.length - 1]._id;
+    return {
+      recipes,
+      cursor: newCursor,
+      hasNext: hasNextPage,
+    };
   }
 }

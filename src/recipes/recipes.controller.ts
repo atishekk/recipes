@@ -7,11 +7,13 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { RecipesService } from './recipes.service';
 import { CommonService } from '../common/common.service';
 import { Recipe } from './models/recipe.model';
 import { NewRecipeInput } from './dto/new-recipe.input';
+import { PaginatedRecipe } from './dto/paginated-recipe';
 
 // REST endpoints for recipes
 @Controller('recipes')
@@ -31,6 +33,13 @@ export class RecipesController {
       );
     recipe['images'] = this.commonService.imageLinksRecipe(recipe['images']);
     return recipe;
+  }
+
+  @Get()
+  async getPaginatedRecipes(
+    @Query('cursor') cursor: string,
+  ): Promise<PaginatedRecipe> {
+    return this.recipesService.paginateRecipe(cursor, 10);
   }
 
   @Post()
