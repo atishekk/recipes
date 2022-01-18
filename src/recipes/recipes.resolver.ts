@@ -2,7 +2,7 @@ import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 import { Recipe } from './models/recipe.model';
 import { RecipesService } from './recipes.service';
 import { NotFoundException } from '@nestjs/common';
-import { NewRecipeInput } from './dto/new-recipe.input';
+import { RecipeMetaInput } from './dto/recipe-meta.input';
 import { PubSub } from 'graphql-subscriptions';
 import { CommonService } from '../common/common.service';
 import { PaginatedRecipe } from './dto/paginated-recipe';
@@ -34,8 +34,17 @@ export class RecipesResolver {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   @Mutation((returns) => Recipe)
+  async updateRecipe(
+    @Args('id') id: string,
+    @Args('updatedRecipe') updatedRecipe: RecipeMetaInput,
+  ): Promise<Recipe> {
+    return this.recipesService.update(id, updatedRecipe);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  @Mutation((returns) => Recipe)
   async addRecipe(
-    @Args('newRecipeData') newRecipeData: NewRecipeInput,
+    @Args('newRecipeData') newRecipeData: RecipeMetaInput,
   ): Promise<Recipe> {
     const recipe = await this.recipesService.create(newRecipeData);
     await pubSub.publish('recipeAdded', { recipeAdded: recipe });

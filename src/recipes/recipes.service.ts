@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Recipe, RecipeDocument } from './models/recipe.model';
 import { Model } from 'mongoose';
-import { NewRecipeInput } from './dto/new-recipe.input';
+import { RecipeMetaInput } from './dto/recipe-meta.input';
 import { PaginatedRecipe } from './dto/paginated-recipe';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class RecipesService {
     return this.recipeModel.findById(id).lean();
   }
 
-  async create(newRecipeData: NewRecipeInput): Promise<Recipe> {
+  async create(newRecipeData: RecipeMetaInput): Promise<Recipe> {
     return this.recipeModel.create(newRecipeData);
   }
 
@@ -51,5 +51,13 @@ export class RecipesService {
       cursor: newCursor,
       hasNext: hasNextPage,
     };
+  }
+
+  async update(id: string, updatedRecipe: RecipeMetaInput): Promise<Recipe> {
+    return this.recipeModel
+      .findOneAndUpdate({ _id: id }, updatedRecipe, {
+        new: true,
+      })
+      .lean();
   }
 }

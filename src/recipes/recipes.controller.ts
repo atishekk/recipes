@@ -7,13 +7,15 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { RecipesService } from './recipes.service';
 import { CommonService } from '../common/common.service';
 import { Recipe } from './models/recipe.model';
-import { NewRecipeInput } from './dto/new-recipe.input';
+import { RecipeMetaInput } from './dto/recipe-meta.input';
 import { PaginatedRecipe } from './dto/paginated-recipe';
+import { ApiQuery } from '@nestjs/swagger';
 
 // REST endpoints for recipes
 @Controller('recipes')
@@ -36,19 +38,30 @@ export class RecipesController {
   }
 
   @Get()
+  @ApiQuery({ name: 'cursor', required: false })
   async getPaginatedRecipes(
-    @Query('cursor') cursor: string,
+    @Query('cursor') cursor?: string,
   ): Promise<PaginatedRecipe> {
     return this.recipesService.paginateRecipe(cursor, 10);
   }
 
   @Post()
-  async createRecipe(@Body() createRecipeDto: NewRecipeInput): Promise<Recipe> {
+  async createRecipe(
+    @Body() createRecipeDto: RecipeMetaInput,
+  ): Promise<Recipe> {
     return this.recipesService.create(createRecipeDto);
   }
 
   @Delete(':id')
   async deleteRecipe(@Param('id') id: string): Promise<boolean> {
     return this.recipesService.remove(id);
+  }
+
+  @Put(':id')
+  async updateRecipeMeta(
+    @Param('id') id: string,
+    @Body() updatedRecipe: RecipeMetaInput,
+  ): Promise<Recipe> {
+    return this.recipesService.update(id, updatedRecipe);
   }
 }

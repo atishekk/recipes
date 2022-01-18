@@ -30,11 +30,12 @@ type Query {
 }
 
 type Mutation {
-  addRecipe(newRecipeData: NewRecipeInput!): Recipe!
+  updateRecipe(updatedRecipe: RecipeMetaInput!, id: String!): Recipe!
+  addRecipe(newRecipeData: RecipeMetaInput!): Recipe!
   removeRecipe(id: String!): Boolean!
 }
 
-input NewRecipeInput {
+input RecipeMetaInput {
   title: String!
   description: String
   ingredients: [String!]!
